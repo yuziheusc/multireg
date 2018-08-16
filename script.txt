@@ -1,0 +1,24 @@
+FILE(  Tract_Data_AFF_filter_real.csv)
+
+## agg 1
+RES(meanV);PRE(households_medianIncome)
+
+## dis 1
+RES(meanV);PRE(households_medianIncome,percent_bachelorPlus)
+RES(meanV);PRE(households_medianIncome,percent_bachelor)
+RES(meanV);PRE(households_medianIncome,percent_graduate)
+
+## agg 2
+RES(meanV);PRE(households_topdecile)
+
+## dis 2
+RES(meanV);PRE(households_topdecile,percent_bachelorPlus)
+RES(meanV);PRE(households_topdecile,percent_graduate)
+
+## agg 3
+RES(meanV);PRE(households_meanIncome)
+
+## dis 3
+RES(meanV);PRE(households_meanIncome,percent_bachelorPlus)
+RES(meanV);PRE(households_meanIncome,percent_bachelor)
+RES(meanV);PRE(households_meanIncome,percent_graduate)
