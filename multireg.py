@@ -35,21 +35,21 @@ def do_regression(data_frame, response_var, predicators):
         pp.savefig(bbox_inches='tight', papertype='a4')
     
         
-    ## plot the residule-x
-    plt.clf()
-    plt.scatter(X[:,1], lr.resid, s = 5.0, c='b', alpha=0.4, linewidth=0.0)
-    plt.xlabel(predicators[0])
-    plt.ylabel("Residual")
-    pp.savefig(bbox_inches='tight', papertype='a4')
+        ## plot the residule-x
+        plt.clf()
+        plt.scatter(X[:,1], lr.resid, s = 5.0, c='b', alpha=0.4, linewidth=0.0)
+        plt.xlabel(predicators[0])
+        plt.ylabel("Residual")
+        pp.savefig(bbox_inches='tight', papertype='a4')
 
-    ## plot residual square-x
-    plt.clf()
-    plt.scatter(X[:,1], lr.resid**2, s = 5.0, c='b', alpha=0.4, linewidth=0.0)
-    plt.xlabel(predicators[0])
-    plt.ylabel("Residual Square")
-    pp.savefig(bbox_inches='tight', papertype='a4')
-
-    y_pred = lr.predict(X)
+        ## plot residual square-x
+        plt.clf()
+        plt.scatter(X[:,1], lr.resid**2, s = 5.0, c='b', alpha=0.4, linewidth=0.0)
+        plt.xlabel(predicators[0])
+        plt.ylabel("Residual Square")
+        pp.savefig(bbox_inches='tight', papertype='a4')
+        
+        y_pred = lr.predict(X)
     
     ## plot the residule-y-pred
     plt.clf()
