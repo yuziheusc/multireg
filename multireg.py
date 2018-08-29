@@ -5,6 +5,10 @@ import statsmodels.api as sm
 import statsmodels.stats.api as sms
 from scipy import stats
 import matplotlib.pyplot as plt
+from matplotlib.backends.backend_pdf import PdfPages
+from scipy.stats import norm
+from scipy.stats import skew
+from scipy.stats import kurtosis
 
 def do_regression(data_frame, response_var, predicators):
     Y = np.array(data_frame[response_var])
@@ -14,6 +18,8 @@ def do_regression(data_frame, response_var, predicators):
     lr = linear_model.fit()
 
     ## make a plot
+    fnou = response_var+"_vs_"+"("+("+".join(predicators))+")"+".pdf"
+    pp = PdfPages(fnou)
     if(len(predicators) == 1):
         ## plot the data points
         plt.clf()
@@ -25,10 +31,69 @@ def do_regression(data_frame, response_var, predicators):
         plt.xlabel(predicators[0])
         plt.ylabel(response_var)
         plt.title(response_var+"_vs_"+predicators[0])
-        fnou = response_var+"_vs_"+predicators[0]+".pdf"
-        plt.savefig(fnou)
-        #plt.show()
         
+        pp.savefig(bbox_inches='tight', papertype='a4')
+    
+        
+    ## plot the residule-x
+    plt.clf()
+    plt.scatter(X[:,1], lr.resid, s = 5.0, c='b', alpha=0.4, linewidth=0.0)
+    plt.xlabel(predicators[0])
+    plt.ylabel("Residual")
+    pp.savefig(bbox_inches='tight', papertype='a4')
+
+    ## plot residual square-x
+    plt.clf()
+    plt.scatter(X[:,1], lr.resid**2, s = 5.0, c='b', alpha=0.4, linewidth=0.0)
+    plt.xlabel(predicators[0])
+    plt.ylabel("Residual Square")
+    pp.savefig(bbox_inches='tight', papertype='a4')
+
+    y_pred = lr.predict(X)
+    
+    ## plot the residule-y-pred
+    plt.clf()
+    plt.scatter(y_pred, lr.resid, s = 5.0, c='r', alpha=0.4, linewidth=0.0)
+    plt.xlabel(response_var)
+    plt.ylabel("Residual")
+    pp.savefig(bbox_inches='tight', papertype='a4')
+
+    ## plot residual square-y-pred
+    plt.clf()
+    plt.scatter(y_pred, lr.resid**2, s = 5.0, c='r', alpha=0.4, linewidth=0.0)
+    plt.xlabel(response_var)
+    plt.ylabel("Residual Square")
+    pp.savefig(bbox_inches='tight', papertype='a4')
+
+    ## plot observed-predicted
+    plt.clf()
+    plt.scatter(y_pred, Y, s = 5.0, c='g', alpha=0.4, linewidth=0.0)
+    y1 = np.arange(min(Y),max(Y),(max(Y)-min(Y))*0.01)
+    plt.plot(y1,y1,'b--')
+    plt.xlabel("Predicted")
+    plt.ylabel("Observed")
+    #plt.title("Aggregated Regression")
+    plt.axis('equal')
+    pp.savefig(bbox_inches='tight', papertype='a4')
+    
+
+    ## make a histogram of residual
+    plt.clf()
+    plt.hist(lr.resid, bins=40)
+    plt.title("Regression Residual Distribution")
+    res_hist = np.histogram(lr.resid,bins=40)
+    bin_w = res_hist[1][1] - res_hist[1][0]
+
+    res_mean = np.mean(lr.resid)
+    res_std = np.std(lr.resid)
+    x1 = np.arange(min(lr.resid), max(lr.resid), (max(lr.resid)-min(lr.resid))*0.01 )
+    y1 = norm.pdf((x1-res_mean)/res_std)*len(lr.resid)*bin_w/res_std
+    plt.plot(x1,y1,'b--')
+    
+    pp.savefig(bbox_inches='tight', papertype='a4')
+    
+    
+    pp.close()
     
     print("fitting parameters : ")
     for i in range(len(lr.params)):
@@ -45,6 +110,10 @@ def do_regression(data_frame, response_var, predicators):
     #print(lr.ssr)
     print("r-square : ", lr.rsquared)
 
+    print("** residual analysis **")
+    print("skewness of residual : %6.3f"%(skew(lr.resid)))
+    print("kurtosis of residual : %6.3f"%(kurtosis(lr.resid)))
+    
     print("** BreuschPagan test **")
     test = sms.het_breushpagan(lr.resid, lr.model.exog)
     name = ['Lagrange multiplier statistic', 'p-value', 
