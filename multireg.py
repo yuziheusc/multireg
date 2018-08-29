@@ -49,7 +49,7 @@ def do_regression(data_frame, response_var, predicators):
         plt.ylabel("Residual Square")
         pp.savefig(bbox_inches='tight', papertype='a4')
         
-        y_pred = lr.predict(X)
+    y_pred = lr.predict(X)
     
     ## plot the residule-y-pred
     plt.clf()
