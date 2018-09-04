@@ -97,33 +97,45 @@ def do_regression(data_frame, response_var, predicators):
     
     print("fitting parameters : ")
     for i in range(len(lr.params)):
-        print("  %4d  %6.3g"%(i,lr.params[i]))
+        print("  %4d  %6.4g"%(i,lr.params[i]))
     
     print("standard error : ")
     for i in range(len(lr.bse)):
-        print("  %4d  %6.3g"%(i,lr.bse[i]))
+        print("  %4d  %6.4g"%(i,lr.bse[i]))
         
     print("p-value : ")
     for i in range(len(lr.pvalues)):
-        print("  %4d  %6.3g"%(i,lr.pvalues[i]))
+        print("  %4d  %6.4g"%(i,lr.pvalues[i]))
     
     #print(lr.ssr)
     print("r-square : ", lr.rsquared)
 
     print("** residual analysis **")
-    print("skewness of residual : %6.3f"%(skew(lr.resid)))
-    print("kurtosis of residual : %6.3f"%(kurtosis(lr.resid)))
+    print("skewness of residual : %6.4g"%(skew(lr.resid)))
+    print("kurtosis of residual : %6.4g"%(kurtosis(lr.resid)))
     
     print("** BreuschPagan test **")
     test = sms.het_breushpagan(lr.resid, lr.model.exog)
     name = ['Lagrange multiplier statistic', 'p-value', 
         'f-value', 'f p-value']
     for i in range(len(test)):
-        print("%s : %5.3f"%(name[i],test[i]))
+        print("%s : %5.3g"%(name[i],test[i]))
 
     print("** Normality of residual **")
     k2, p = stats.normaltest(lr.resid)
     print("p-value = ", p)
+
+    ## write a line of record to the output data file
+    fpou = open("data_output.txt","a")
+    
+    buf = "%d %s %s"%(len(predicators), response_var, " ".join(predicators) )
+    buf = buf + " %6.4g"%(lr.rsquared)
+    for i in range(len(lr.params)):
+        buf = buf + " %6.4g"%(lr.params[i])
+    for i in range(len(lr.pvalues)):
+        buf = buf + " %6.4g"%(lr.pvalues[i])
+    fpou.write(buf+"\n")
+    fpou.close()
     
         
 if __name__ == "__main__":
@@ -133,6 +145,11 @@ if __name__ == "__main__":
     fnin = sys.argv[1]
     print("\nSTART\n")
     print("Script file : %s"%(fnin))
+
+    ## create the empty output data file.
+    fpou = open("data_output.txt","w")
+    fpou.close()
+
     try:
         fpin = open(fnin)
     except IOError:
